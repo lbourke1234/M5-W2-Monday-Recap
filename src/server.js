@@ -4,16 +4,18 @@ import productsRouter from './apis/products/index.js'
 import cors from 'cors'
 import { join } from 'path'
 
+const publicFolderPath = join(process.cwd(), './public')
+
 const server = express()
 
 const port = 5001
 
+server.use(express.static(publicFolderPath))
 server.use(express.json())
 server.use(cors())
 
 server.use('/products', productsRouter)
 
-const publicFolderPath = join(process.cwd(), './public')
 server.use(express.static(publicFolderPath))
 
 server.listen(port, () => {
