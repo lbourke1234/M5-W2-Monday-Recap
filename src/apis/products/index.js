@@ -16,7 +16,40 @@ import createError from 'http-errors'
 import multer from 'multer'
 import { saveProductsPicture } from '../../lib/fs-tools.js'
 
+import { v2 as cloudinary } from 'cloudinary'
+import { CloudinaryStorage } from 'multer-storage-cloudinary'
+
 const productsRouter = express.Router()
+
+const cloudinaryUploader = multer({
+  storage: new CloudinaryStorage({
+    cloudinary,
+    params: {
+      folder: 'm5'
+    }
+  })
+  // fileFilter: (req, file, multerNext) => {
+  //   if (file.mimetype !== 'image/gif') {
+  //     multerNext(createError(400, 'Only Gif allowed!'))
+  //   } else {
+  //     multerNext(null, true)
+  //   }
+  // },
+  // limits: { fileSize: 1024 * 1024 }
+}).single('picture')
+
+productsRouter.post(
+  '/:productId/upload',
+  cloudinaryUploader,
+  async (req, res, next) => {
+    try {
+      console.log('FILE: ', req.file)
+      res.send()
+    } catch (error) {
+      next(error)
+    }
+  }
+)
 
 productsRouter.post(
   '/',
@@ -228,37 +261,37 @@ productsRouter.delete(
   }
 )
 
-productsRouter.post(
-  '/:productId/upload',
-  multer().single('picture'),
-  async (request, response, next) => {
-    try {
-      console.log('FILE:', request.file)
-      const url = await saveProductsPicture(
-        request.file.originalname,
-        request.file.buffer
-      )
+// productsRouter.post(
+//   '/:productId/upload',
+//   multer().single('picture'),
+//   async (request, response, next) => {
+//     try {
+//       console.log('FILE:', request.file)
+//       const url = await saveProductsPicture(
+//         request.file.originalname,
+//         request.file.buffer
+//       )
 
-      const products = await getProducts()
+//       const products = await getProducts()
 
-      const index = products.findIndex(
-        (post) => post.id === request.params.userId
-      )
-      if (index !== -1) {
-        const oldPost = products[index]
-        const updatedProducts = {
-          ...oldPost,
-          imageUrl: url,
-          updatedAt: new Date()
-        }
-        products[index] = updatedProducts
-        await writeProducts(products)
-        response.send(updatedProducts)
-      }
-    } catch (error) {
-      next(error)
-    }
-  }
-)
+//       const index = products.findIndex(
+//         (post) => post.id === request.params.userId
+//       )
+//       if (index !== -1) {
+//         const oldPost = products[index]
+//         const updatedProducts = {
+//           ...oldPost,
+//           imageUrl: url,
+//           updatedAt: new Date()
+//         }
+//         products[index] = updatedProducts
+//         await writeProducts(products)
+//         response.send(updatedProducts)
+//       }
+//     } catch (error) {
+//       next(error)
+//     }
+//   }
+// )
 
 export default productsRouter
