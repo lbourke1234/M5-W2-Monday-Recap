@@ -8,11 +8,17 @@ const publicFolderPath = join(process.cwd(), './public')
 
 const server = express()
 
-const port = 5001
+const port = process.env.PORT || 5001
+
+const whitelist = []
+const corsOptions = {
+  origin: 'http://frontendapp.com'
+}
+
+server.use(cors())
 
 server.use(express.static(publicFolderPath))
 server.use(express.json())
-server.use(cors())
 
 server.use('/products', productsRouter)
 
