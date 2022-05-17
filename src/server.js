@@ -12,6 +12,7 @@ const server = express()
 const port = process.env.PORT || 5001
 
 const whitelist = [process.env.BE_URL]
+
 const corsOptions = {
   origin: (origin, next) => {
     console.log('CURRENT ORIGIN: ', origin)

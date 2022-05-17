@@ -19,6 +19,14 @@ import { saveProductsPicture } from '../../lib/fs-tools.js'
 import { v2 as cloudinary } from 'cloudinary'
 import { CloudinaryStorage } from 'multer-storage-cloudinary'
 
+const { CLOUDINARY_KEY, CLOUDINARY_SECRET, CLOUDINARY_CLOUD_NAME } = process.env
+
+// cloudinary.config({
+//   api_key: CLOUDINARY_KEY,
+//   api_secret: CLOUDINARY_SECRET,
+//   cloud_name: CLOUDINARY_CLOUD_NAME
+// })
+
 const productsRouter = express.Router()
 
 const cloudinaryUploader = multer({
@@ -41,12 +49,13 @@ const cloudinaryUploader = multer({
 productsRouter.post(
   '/:productId/upload',
   cloudinaryUploader,
-  async (req, res, next) => {
+  (req, res, next) => {
     try {
       console.log('FILE: ', req.file)
       res.send()
     } catch (error) {
-      next(error)
+      console.log(error)
+      res.status(500).send({ error: error.message })
     }
   }
 )
