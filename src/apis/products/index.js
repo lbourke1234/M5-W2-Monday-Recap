@@ -18,6 +18,7 @@ import { saveProductsPicture } from '../../lib/fs-tools.js'
 
 import { v2 as cloudinary } from 'cloudinary'
 import { CloudinaryStorage } from 'multer-storage-cloudinary'
+import 'dotenv/config'
 
 const { CLOUDINARY_KEY, CLOUDINARY_SECRET, CLOUDINARY_CLOUD_NAME } = process.env
 
@@ -28,6 +29,8 @@ const { CLOUDINARY_KEY, CLOUDINARY_SECRET, CLOUDINARY_CLOUD_NAME } = process.env
 // })
 
 const productsRouter = express.Router()
+
+console.log(process.env.CLOUDINARY_URL)
 
 const cloudinaryUploader = multer({
   storage: new CloudinaryStorage({
