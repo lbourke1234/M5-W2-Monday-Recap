@@ -20,17 +20,7 @@ import { v2 as cloudinary } from 'cloudinary'
 import { CloudinaryStorage } from 'multer-storage-cloudinary'
 import 'dotenv/config'
 
-const { CLOUDINARY_KEY, CLOUDINARY_SECRET, CLOUDINARY_CLOUD_NAME } = process.env
-
-// cloudinary.config({
-//   api_key: CLOUDINARY_KEY,
-//   api_secret: CLOUDINARY_SECRET,
-//   cloud_name: CLOUDINARY_CLOUD_NAME
-// })
-
 const productsRouter = express.Router()
-
-console.log(process.env.CLOUDINARY_URL)
 
 const cloudinaryUploader = multer({
   storage: new CloudinaryStorage({
@@ -39,26 +29,33 @@ const cloudinaryUploader = multer({
       folder: 'm5'
     }
   })
-  // fileFilter: (req, file, multerNext) => {
-  //   if (file.mimetype !== 'image/gif') {
-  //     multerNext(createError(400, 'Only Gif allowed!'))
-  //   } else {
-  //     multerNext(null, true)
-  //   }
-  // },
-  // limits: { fileSize: 1024 * 1024 }
 }).single('picture')
 
 productsRouter.post(
   '/:productId/upload',
   cloudinaryUploader,
-  (req, res, next) => {
+  async (req, res, next) => {
     try {
       console.log('FILE: ', req.file)
-      res.send()
+      const products = await getProducts()
+      const index = products.findIndex(
+        (product) => product.id === req.params.productId
+      )
+      if (index !== -1) {
+        const oldProduct = products[index]
+        const updatedProduct = {
+          ...oldProduct,
+          imageUrl: req.file.path,
+          updatedAt: new Date()
+        }
+        products[index] = updatedProduct
+        await writeProducts(products)
+        console.log(updatedProduct)
+        console.log(req.file.path)
+        res.send('hello', { updatedProduct: updatedProduct })
+      }
     } catch (error) {
-      console.log(error)
-      res.status(500).send({ error: error.message })
+      next(error)
     }
   }
 )
