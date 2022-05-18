@@ -11,7 +11,10 @@ const server = express()
 
 const port = process.env.PORT || 5001
 
-const whitelist = [process.env.BE_URL, 'https://m5-first-deploy.herokuapp.com/']
+const whitelist = [
+  'http://localhost:5001',
+  'https://m5-first-deploy.herokuapp.com/'
+]
 console.log(whitelist)
 console.log(process.env.CLOUDINARY_URL)
 
